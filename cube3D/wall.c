@@ -11,7 +11,7 @@ float walls(t_info *info, float distance, int whichray)
 	float slice_hight;
 
 	corrected_distance = fishbowl(info, distance, whichray); // il faut appliquer cette formule pour tout angle ou juste pour les angle droit??
-	printf("---------------------------------------------------------corrected_distance %f\n", corrected_distance);
+	// printf("---------------------------------------------------------corrected_distance %f\n", corrected_distance);
 	slice_hight = projected_slice_hight(info, corrected_distance);
 	return (slice_hight);
 }
@@ -28,7 +28,7 @@ float fishbowl(t_info *info, float distorted_distance, int whichray)
 	float corrected_distance;
 
 	angle_offset = info->pov / info->screenWidth;
-	printf("angle_offset = %f\n", angle_offset);
+	// printf("angle_offset = %f\n", angle_offset);
 	if (whichray < (int)(info->screenWidth / 2))
 		corrected_distance = distorted_distance * cos(ft_deg2rad((info->pov / 2) - (whichray * angle_offset)));
 	else

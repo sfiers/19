@@ -15,6 +15,8 @@ int	ft_key_press(int keycode, t_info *info)
 	if (keycode == 123 || keycode == 124)
 		ft_angle(keycode, info);
 	rendering(info);
+	printf("a.x = %f\n", info->a.x);
+	printf("a.y = %f\n", info->a.y);
 	printf("angle = %f\n", info->angle);
 	return 0;
 }
@@ -29,7 +31,6 @@ int             ft_moove(int keycode, t_info *info)
 	{
     	motion(info, BACKWARD);
 	}
-	printf("a.x = %f\n", info->a.x);
 	return(0);
 }
 

@@ -42,8 +42,8 @@ void forward_backward(t_info *info, int motion) // motion 1 forward -1 backward
 {
 	float displacement[2];
 
-	displacement[0] = motion * cos(info->angle) * 10; // 10 is arbitrary, the bigger the less smooth
-	displacement[1] = motion * sin(info->angle) * 10; // 10 is arbitrary, the bigger the less smooth
+	displacement[0] = motion * cos(ft_deg2rad(info->angle)) * 10; // 10 is arbitrary, the bigger the less smooth
+	displacement[1] = motion * sin(ft_deg2rad(info->angle)) * 10; // 10 is arbitrary, the bigger the less smooth
 
 	if (allowed_motion(info, displacement))
 	{
@@ -95,8 +95,6 @@ int inside_map(t_info *info, t_map coordinates)
 
 int avoid_wall(t_map coordinates, t_info *info)
 {
-	printf("tcoordinates.x %d\n", (mapWidth - 1) - coordinates.y);
-	printf("tcoordinates.y %d\n", coordinates.x);
 	if (info->worldMap[(mapWidth - 1) - coordinates.y][coordinates.x] != 1) // 1 for Wall maybe there are other checks afterwards that need to be done
 		return (1);
 	return(0);

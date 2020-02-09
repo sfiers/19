@@ -27,14 +27,14 @@ void ray(t_ray *ray, t_p a, t_p b)
 
 float distance_2_points(t_p a, t_p b)
 {
-	printf("%f %f %f %f\n", a.x, a.y, b.x, b.y);
+	// printf("%f %f %f %f\n", a.x, a.y, b.x, b.y);
 	return (sqrt(pow(b.x - a.x, 2) + pow(b.y - a.y, 2)));
 }
 
 void find_y(t_p *a, float m, float n)
 {
 	a->y = round((m * a->x) + n);
-	printf("a->y %f\n", a->y);
+	// printf("a->y %f\n", a->y);
 	return;
 }
 

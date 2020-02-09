@@ -8,7 +8,7 @@ void fill_info(t_info *info)
 	info->pov = 66;
 	info->a.x = 160;
 	info->a.y = 160;
-	info->angle = 0;
+	info->angle = 0; // link to input NESW
 	info->a.z = 32;
 	info->bad = info->pov/2;
 	info->bd = info->screenWidth / 2;
@@ -21,8 +21,8 @@ void fill_info(t_info *info)
 	info->b.y = info->a.y + info->dir.y + info->plan.y;
 	info->c.x = info->a.x + info->dir.x - info->plan.x;
 	info->c.y = info->a.y + info->dir.y - info->plan.y;
-	info->next_axis[0] = info->a.x + ((int)info->a.x % (int)info->blocksize);
-	info->next_axis[1] = info->a.y + ((int)info->a.y % (int)info->blocksize);
+	info->next_axis[0] = (int)info->a.x + (int)info->blocksize - ((int)info->a.x % (int)info->blocksize);
+	info->next_axis[1] = (int)info->a.y + (int)info->blocksize - ((int)info->a.y % (int)info->blocksize);
 }
 
 void update_info(t_info *info)
@@ -35,8 +35,10 @@ void update_info(t_info *info)
 	info->b.y = info->a.y + info->dir.y + info->plan.y;
 	info->c.x = info->a.x + info->dir.x - info->plan.x;
 	info->c.y = info->a.y + info->dir.y - info->plan.y;
-	info->next_axis[0] = info->a.x + ((int)info->a.x % (int)info->blocksize);
-	info->next_axis[1] = info->a.y + ((int)info->a.y % (int)info->blocksize);
+	info->next_axis[0] = (int)info->a.x + (int)info->blocksize - ((int)info->a.x % (int)info->blocksize);
+	info->next_axis[1] = (int)info->a.y + (int)info->blocksize - ((int)info->a.y % (int)info->blocksize);
+	printf("info->next_axis[0] = %f\n", info->next_axis[0]);
+	printf("info->next_axis[1] = %f\n", info->next_axis[1]);
 }
 
 void	ft_display(t_info *info, int whichray, float distance) // probablenent suppr float distance
@@ -102,10 +104,12 @@ void rendering (t_info *info)
 		test_y_axis(info);
 		shortest_distance = distance_to_wall(info);
 		slice_hight = walls(info, shortest_distance, whichray);
+		printf("distance %f\n", shortest_distance);
+		printf("slice_hight %f\n", slice_hight);
 		ft_display(info, whichray, slice_hight);
 		whichray++;
-		printf("a.x = %f\n", info->a.x);
-		printf("a.y = %f\n", info->a.y);
+		// printf("a.x = %f\n", info->a.x);
+		// printf("a.y = %f\n", info->a.y);
 	}
 } 
 
@@ -119,32 +123,21 @@ void test_x_axis(t_info *info)
 {
 	int hit;
 	int n;
-	// int i;
-	// int j;
 	
 	n = 0;
 	hit = 0;
-	// 	for(j=0; j < 24; j++)
-  	// {
-    // for(i = 0; i < 24; i++)
-    // {
-    //   printf("%d",info->worldMap[j][i]);
-    // }
-    // printf("\n");
-	// }
 	info->redflag[0] = 0;
 	info->test_axis[n].x = (info->a.x < info->p_of_plan.x) ? info->next_axis[n] : info->next_axis[n] - info->blocksize;
 	while (hit == 0)
 	{
 		find_y(&info->test_axis[n], info->ray.m, info->ray.n);
-		printf("info->test_axis[0] = %f\n", info->test_axis[n].x);
-		//printf(stderr, "info->test_axis[0] = %f\n", info->test_axis[n].y);
-		printf("info->test_axis[0] = %f\n", info->test_axis[n].y);
+		// printf("test x = %f\n", info->test_axis[n].x);
+		// printf("test y = %f\n", info->test_axis[n].y);
 		if (map_bounderies(info, n) == 1)
 			break;
 		if((hit = hit_map(info, n) == 1))
 		{
-			printf("hit = %d\n", hit);
+			// printf("hit = %d\n", hit);
 			break;
 		}
 		info->test_axis[n].x += (info->a.x < info->p_of_plan.x) ? info->blocksize : - info->blocksize;
@@ -172,7 +165,11 @@ void test_y_axis(t_info *info)
 			printf("hit = %d\n", hit);
 			break;
 		}
+		printf("info->test_axis[1] = %f\n", info->test_axis[n].x);
+		printf("info->test_axis[1] = %f\n", info->test_axis[n].y);
 		info->test_axis[n].y += (info->a.y < info->p_of_plan.y) ? info->blocksize : - info->blocksize;
+		printf("info->test_axis[1] = %f\n", info->test_axis[n].x);
+		printf("info->test_axis[1] = %f\n", info->test_axis[n].y);
 	}
 }
 
@@ -181,13 +178,13 @@ int map_bounderies(t_info *info, int n)
 	if ((int)info->test_axis[n].x < 0 || (int)info->test_axis[n].y < 0)
 	{
 		info->redflag[n] = 1;
-		printf("info->redflag[n] = %d\n", info->redflag[n]);
+		// printf("info->redflag[n] = %d\n", info->redflag[n]);
 		return (1);
 	}
 	if ((int)info->test_axis[n].x >= (int)(mapHeight * info->blocksize) || (int)info->test_axis[n].y >= (int)(mapWidth * info->blocksize))
 	{
 		info->redflag[n] = 1;
-		printf("info->redflag[n] = %d\n", info->redflag[n]);
+		// printf("info->redflag[n] = %d\n", info->redflag[n]);
 		return (1);
 	}
 	return (0);
@@ -199,23 +196,27 @@ float distance_to_wall(t_info *info)
 
 	if (info->redflag[0] == 1)
 	{
-		printf("--------------1--------------\n");
+		// printf("--------------1--------------\n");
 		// printf("distance[0] %f\n", distance[0]);
 		// printf("distance[1] %f\n", distance_2_points(info->a, info->test_axis[1]));
 		return (distance_2_points(info->a, info->test_axis[1]));
 	}
 	if (info->redflag[1] == 1)
 	{
-		printf("--------------2--------------\n");
+		// printf("--------------2--------------\n");
 		// printf("distance[0] %f\n", distance[0]);
 		// printf("distance[1] %f\n", distance[1]);
 		return (distance_2_points(info->a, info->test_axis[0]));
 	}
+	printf("info->a = %f\n", info->a.x);
+	printf("info->a = %f\n", info->a.y);
+	printf("info->test_axis[0] = %f\n", info->test_axis[0].x);
+	printf("info->test_axis[0] = %f\n", info->test_axis[0].y);
 	distance[0] = distance_2_points(info->a, info->test_axis[0]); // pour les x
 	distance[1] = distance_2_points(info->a, info->test_axis[1]); 
-	// printf("distance[0] %f\n", distance[0]);
-	// printf("distance[1] %f\n", distance[1]);
-	// printf("--------------distance to be used---------------\n");
+	printf("distance[0] %f\n", distance[0]);
+	printf("distance[1] %f\n", distance[1]);
+	printf("--------------distance to be used---------------\n");
 	if (distance[0] < distance[1])
 		return (distance[0]);
 	else 
@@ -228,10 +229,10 @@ float hit_map(t_info *info, int n)
 	info->map[0].y = bloc_to_map(info->test_axis[n].y, info->blocksize);
 	info->map[1].x = bloc_to_map(info->test_axis[n].x, info->blocksize);
 	info->map[1].y = (info->a.y < info->p_of_plan.y) ? bloc_to_map(info->test_axis[n].y, info->blocksize) : bloc_to_map(info->test_axis[n].y, info->blocksize) - 1;
-	printf("map A = %d\n", (mapHeight - 1) - info->map[n].y);
-	printf("map B = %d\n", info->map[n].x);
-	printf("test x = %d\n", info->map[n].x);
-	printf("test y = %d\n", info->map[n].y);	
+	// printf("map A = %d\n", (mapHeight - 1) - info->map[n].y);
+	// printf("map B = %d\n", info->map[n].x);
+	// printf("test x = %d\n", info->map[n].x);
+	// printf("test y = %d\n", info->map[n].y);	
 	if (info->map[n].x < 0 || info->map[n].y < 0) // y sais etre moins 1 dans le test peut etre x aussi
 		return (1);
 	if (info->worldMap[(mapWidth - 1) - info->map[n].y][info->map[n].x] == 1) // because our map y-axis is reversed (to be checked if mapWidth and not mapHeight)
