@@ -38,6 +38,7 @@
 
 #include "./minilibx/mlx.h"
 #include "./GNL/get_next_line.h"
+#include <stdio.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -66,6 +67,13 @@ typedef struct		s_ray
 	float n;
 }					t_ray;
 
+typedef struct	s_mlx_ptr
+{
+	void *win;
+	void *mlx;
+	int *img;
+}				t_mlx_ptr; 
+
 typedef struct      s_info
 {
 	int **worldMap;
@@ -88,7 +96,8 @@ typedef struct      s_info
 	float next_axis[2];
 	t_map map[2]; // x axis = 0 and y axis 1
 	t_p test_axis[2];
-	int redflag[0];
+	int redflag[2];
+	t_mlx_ptr s;
 }				    t_info;
 
 typedef struct      s_maptab
@@ -106,12 +115,7 @@ typedef struct      s_maptab
 	int		i;
 }					t_maptab;
 
-typedef struct	mlx_ptr_s
-{
-	void *win;
-	void *mlx;
-	int *img;
-}				mlx_ptr_t; // je crois que la norme nous force a t_mlx_ptr
+
 
 /*
 ** --------------------------------- Define ------------------------------------
@@ -186,13 +190,13 @@ float toa(float angle, float o);
 float walls(t_info *info, float distance, int whichray);
 float fishbowl(t_info *info, float distorted_distance, int whichray);
 float projected_slice_hight(t_info *info, float distance);
-void	ft_display(t_info *info, mlx_ptr_t *s, int whichray, float distance);
+void	ft_display(t_info *info, int whichray, float distance);
 
 /*
 ** --------------------------- Key Events --------------------------------------
 */
 
-int ft_close(int keycode, mlx_ptr_t *s); // fermer la fenetre
+int ft_close(int keycode, t_mlx_ptr *s); // fermer la fenetre
 int ft_angle(int keycode, t_info *info);
 int ft_moove(int keycode, t_info *info);
 
@@ -203,8 +207,16 @@ int ft_moove(int keycode, t_info *info);
 void motion(t_info *info, int motion);
 void forward_backward(t_info *info, int motion);
 int allowed_motion(t_info *info, float *displacement);
-int avoid_wall(t_map coordinates, int ***worldMap);
+int avoid_wall(t_map coordinates, t_info *info);
 int inside_map(t_info *info, t_map coordinates);
+int	ft_key_press(int keycode, t_info *info);
+
+/*
+** --------------------------- Rendering --------------------------------------
+*/
+
+void rendering (t_info *info);
+void update_info(t_info *info);
 
 
 #endif

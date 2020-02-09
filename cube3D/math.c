@@ -34,6 +34,7 @@ float distance_2_points(t_p a, t_p b)
 void find_y(t_p *a, float m, float n)
 {
 	a->y = round((m * a->x) + n);
+	printf("a->y %f\n", a->y);
 	return;
 }
 

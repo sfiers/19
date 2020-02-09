@@ -6,7 +6,7 @@
 /*   By: ssimon <ssimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/31 17:00:17 by lduhamel          #+#    #+#             */
-/*   Updated: 2020/02/07 12:27:41 by ssimon           ###   ########.fr       */
+/*   Updated: 2020/02/08 15:39:47 by ssimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,21 +145,21 @@ int			start(t_maptab *tab)
 		if (tab->counter == 0)
 		{
 			tab->len = ft_strlen(tab->line);
-			if (check_hside(tab->line, tab->len) == -1)
-				return (-1);
+			// if (check_hside(tab->line, tab->len) == -1)
+			// 	return (-1);
 		}
 		if ((tab->check_len = ft_strlen(tab->line)) != tab->len)
 			return (-1);
-		if (check_vside(&tab->line, tab->len, &tab->letter) == -1)
-			return (-1);
+		// if (check_vside(&tab->line, tab->len, &tab->letter) == -1)
+		// 	return (-1);
 		tab->map_str = ft_join_lines(tab->map_str, tab->line, tab->len, tab->counter);
 		free(tab->line);
 		tab->counter++;
 	}
-	if (check_hside(tab->line, tab->len) == -1)
-		return (-1);
-	if (tab->letter != 1)
-		return (-1);
+	// if (check_hside(tab->line, tab->len) == -1)
+	// 	return (-1);
+	// if (tab->letter != 1)
+	// 	return (-1);
 	tab->lines_nb = ft_lines_number(tab->map_str);
 	return (1);
 }
