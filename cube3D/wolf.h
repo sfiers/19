@@ -72,6 +72,10 @@ typedef struct	s_mlx_ptr
 	void *win;
 	void *mlx;
 	int *img;
+	int *data;
+	int size;
+	int bpp;
+	int a;
 }				t_mlx_ptr; 
 
 typedef struct      s_info
@@ -79,8 +83,8 @@ typedef struct      s_info
 	int **worldMap;
 	float blocksize;
 	float angle;
-	float screenWidth;
-	float screenHeight;
+	int		screenWidth;
+	int		screenHeight;
 	float pov;
 	t_p	a;
 	t_p	b;

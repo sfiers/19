@@ -17,7 +17,7 @@
 	
 // 	//s.img = mlx_new_image(s.mlx, info.screenWidth, info.screenHeight);
 // 	motion(&info, 1);
-// 	printf("motion \n");
+// 	// printf("motion \n");
 // 	//	mlx_put_image_to_window(s.mlx, s.win, s.img, info.screenWidth, info.screenHeight);
 // 	// mlx_key_hook(s.win, ft_moove, &info);
 // // /	mlx_key_hook(s.win, ft_angle, &info);

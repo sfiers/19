@@ -6,7 +6,7 @@
 /*   By: ssimon <ssimon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/31 17:00:17 by lduhamel          #+#    #+#             */
-/*   Updated: 2020/02/08 15:39:47 by ssimon           ###   ########.fr       */
+/*   Updated: 2020/02/10 00:45:16 by ssimon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void		filling_tab(int lines_nb, int len, int ***tab, char *map_str)
 		while (i < len)
 		{
 			(*tab)[j][i] = map_str[k] - '0';
-			//printf("(*tab)[j][i] = %d\n", (*tab)[j][i]);
+			//// printf("(*tab)[j][i] = %d\n", (*tab)[j][i]);
 			k++;
 			i++;
 		}
@@ -192,9 +192,9 @@ int	parsing(t_maptab *tab)
   	// {
     // for(i = 0; i < tab->len; i++)
     // {
-    //   printf("%d",tab->tab[j][i]);
+    //   // printf("%d",tab->tab[j][i]);
     // }
-    // printf("\n");
+    // // printf("\n");
 	// }
 	close(tab->fd);
 	return(0);
