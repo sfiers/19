@@ -18,9 +18,9 @@ int	ft_key_press(int keycode, t_info *info)
 		exit(0);
     	// mlx_destroy_window(s->mlx, s->win);
 	rendering(info);
-	// printf("a.x = %f\n", info->a.x);
-	// printf("a.y = %f\n", info->a.y);
-	// printf("angle = %f\n", info->angle);
+	// // // printf("a.x = %f\n", info->a.x);
+	// // // printf("a.y = %f\n", info->a.y);
+	// // // printf("angle = %f\n", info->angle);
 	return 0;
 }
 
@@ -49,7 +49,7 @@ int             ft_angle(int keycode, t_info *info)
 	{
     	(info->angle) -= 5; // motion(info, LEFT);
 	}
-	// printf("keycode2 = %d\n", keycode);
-	// printf("info.angle = %f\n", info->angle);
+	// // // printf("keycode2 = %d\n", keycode);
+	// // // printf("info.angle = %f\n", info->angle);
 	return(0);
 }

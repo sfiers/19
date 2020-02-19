@@ -7,8 +7,8 @@
 // 	t_maptab tab;
 // 	int i;
 // 	int whichray;
-// 	float distance;
-// 	float slice_hight;
+// 	double distance;
+// 	double slice_hight;
 	
 // 	parsing(&tab);
 // 	info.worldMap = tab.tab;
@@ -17,7 +17,7 @@
 	
 // 	//s.img = mlx_new_image(s.mlx, info.screenWidth, info.screenHeight);
 // 	motion(&info, 1);
-// 	// printf("motion \n");
+// 	// // // printf("motion \n");
 // 	//	mlx_put_image_to_window(s.mlx, s.win, s.img, info.screenWidth, info.screenHeight);
 // 	// mlx_key_hook(s.win, ft_moove, &info);
 // // /	mlx_key_hook(s.win, ft_angle, &info);
@@ -40,19 +40,19 @@ void motion(t_info *info, int motion)
 
 void forward_backward(t_info *info, int motion) // motion 1 forward -1 backward
 {
-	float displacement[2];
+	double displacement[2];
 
 	displacement[0] = motion * cos(ft_deg2rad(info->angle)) * 10; // 10 is arbitrary, the bigger the less smooth
 	displacement[1] = motion * sin(ft_deg2rad(info->angle)) * 10; // 10 is arbitrary, the bigger the less smooth
 
 	if (allowed_motion(info, displacement))
 	{
-		info->a.x += displacement[0];
-		info->a.y += displacement[1];
+		info->a.x += round(displacement[0]);
+		info->a.y += round(displacement[1]);
 	}
 }
 
-int allowed_motion(t_info *info, float *displacement)
+int allowed_motion(t_info *info, double *displacement)
 {
 	t_p position_proposal;
 	t_map map_check;
