@@ -44,6 +44,7 @@
 
 #include "./minilibx/mlx.h"
 #include "./GNL/get_next_line.h"
+#include "./libft/libft.h"
 #include <stdio.h>
 #include <math.h>
 #include <stdio.h>
@@ -84,6 +85,14 @@ typedef struct	s_mlx_ptr
 	int a; 
 }				t_mlx_ptr; 
 
+// typedef struct s_rgb
+// {
+// 	char red;
+// 	char green;
+// 	char blue;
+// 	char opacity;
+// }				t_rgb;
+
 typedef struct      s_info
 {
 	int **worldMap;
@@ -108,6 +117,9 @@ typedef struct      s_info
 	t_p test_axis[2];
 	int redflag[2];
 	t_mlx_ptr s;
+	// t_rgb ceiling;
+	// t_rgb wall;
+	// t_rgb floor;
 }				    t_info;
 
 typedef struct      s_error

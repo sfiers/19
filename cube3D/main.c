@@ -46,6 +46,19 @@ void	mlx_put_in_img(t_info *info, int x, int y, int color)
 	info->s.data[((int)info->screenWidth) * y + x] = color;
 }
 
+// t_s		*create_image(t_info *info, int x, int y)
+// {
+// 	int i;
+// ​
+// 	s = begin_list(s);
+// 	i = (x * s->screen.bpp / 8) + (s->screen.size_line * y);
+// 	info->s.data[i] = info->ceiling.red;
+// 	s->screen.data[++i] = info->ceiling.green;
+// 	s->screen.data[++i] = info->ceiling.blue;
+// 	s->screen.data[++i] = 0;
+// 	return (s);
+// }
+
 void	ft_display(t_info *info, int whichray, double distance) // probablenent suppr float distance
 {
 	int		y;
@@ -53,6 +66,7 @@ void	ft_display(t_info *info, int whichray, double distance) // probablenent sup
 
 	y = 0;
 	wall_down = (info->screenHeight - distance) / 2;
+	// ft_bzero(info->s.data, info->screenHeight * info->screenWidth * 4);
 	while (y < info->screenHeight)
 	{
 		while (y < wall_down) //plafond
@@ -76,7 +90,7 @@ int	main()
 // 	all->fractal.img = mlx_new_image(all->wdw.mlx_ptr, W_SIZE_X, W_SIZE_Y);
 // all->fractal.data = (int *)mlx_get_data_addr(all->fractal.img, &all->fractal.bpp, &all->fractal.size, &all->fractal.a);
 
-  info.s.win = mlx_new_window(info.s.mlx, info.screenWidth, info.screenHeight, "Cube3D");
+   	info.s.win = mlx_new_window(info.s.mlx, info.screenWidth, info.screenHeight, "Cube3D");
 	info.s.img = mlx_new_image(info.s.mlx, info.screenWidth, info.screenHeight);
 	info.s.data = (int *)mlx_get_data_addr(info.s.img, &info.s.bpp, &info.s.size, &info.s.a);
 	rendering(&info);
@@ -98,7 +112,7 @@ void rendering (t_info *info)
 
 
 	whichray = 0;
-	mlx_clear_window(info->s.mlx, info->s.win);
+	// mlx_clear_window(info->s.mlx, info->s.win); don t clear with image
 	while(whichray < info->screenWidth)
 	{
 		// printf("------------------ray = %d\n", whichray);
