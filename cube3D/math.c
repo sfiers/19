@@ -14,6 +14,11 @@ double ft_deg2rad(double degree)
     return (degree * M_PI/180);
 }
 
+double ft_rad2deg(double rad)
+{
+    return (rad / (PI/180.0));
+}
+
 void ray(t_ray *ray, t_p a, t_p b)
 {
 	double temp;
@@ -66,3 +71,8 @@ int bloc_to_map(double position, double blocksize)
 {
 	return(floor((int)position / (int)blocksize));
 } 
+
+double ft_distancepointdroite(t_p p, t_droite e)
+{
+	return(fabs((e.a * p.x + e.b * p.y + e.c) / sqrt(pow(e.a, 2) + pow(e.b, 2))));
+}

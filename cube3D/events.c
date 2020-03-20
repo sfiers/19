@@ -8,7 +8,7 @@ int             ft_close(int keycode, t_mlx_ptr *s)
 	return(0);
 }
 
-int	ft_key_press(int keycode, t_info *info)
+int	ft_key_press(int keycode, t_info *info, t_sprites *barrel)
 {
 	if (keycode == 125 || keycode == 126)
 		ft_moove(keycode, info);
@@ -17,7 +17,7 @@ int	ft_key_press(int keycode, t_info *info)
 	if (keycode == 53)
 		exit(0);
     	// mlx_destroy_window(s->mlx, s->win);
-	rendering(info);
+	rendering(info, barrel);
 	// // // printf("a.x = %f\n", info->a.x);
 	// // // printf("a.y = %f\n", info->a.y);
 	// // // printf("angle = %f\n", info->angle);

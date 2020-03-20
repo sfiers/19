@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ssimon <ssimon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: lduhamel <lduhamel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/31 17:00:17 by lduhamel          #+#    #+#             */
-/*   Updated: 2020/02/20 00:41:41 by ssimon           ###   ########.fr       */
+/*   Updated: 2020/03/19 17:25:57 by lduhamel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int		ft_strlen1(char *s) // a supp : doublon
 	return(i);
 }
 
-int		cleanline(t_maptab *tab, t_error *error, char **line, char **newline)
+int		cleanline(t_maptab *tab, t_info *info, char **line, char **newline)
 {
 	int i;
 	int j;
@@ -60,12 +60,12 @@ int		cleanline(t_maptab *tab, t_error *error, char **line, char **newline)
 		if (tab->counter == 0)
 		{
 			if ((*line)[i] != '1')
-				error->ret = -1;
+				tab->error.ret = -1;
 		}
 		else
-			error->ret = check_vside(error, &tab->line, i, &tab->letter);
+			tab->error.ret = check_vside(tab, info, &tab->line, i);
 		// // // printf("letter = %d\n", tab->letter);
-		if (error->ret < 0)
+		if (tab->error.ret < 0)
 			return (-1);
 		(*newline)[j] = (*line)[i];
 		i++;
@@ -99,21 +99,23 @@ int		error_ret(t_error *error)
 	return (0);
 }
 
-int	check_vside(t_error *error, char **line, int i, int *letter)
+int	check_vside(t_maptab *tab, t_info *info, char **line, int i)
 {
 	if ((*line)[0] != '1' || (*line)[ft_strlen1(*line) - 1] != '1')
 		return (-1);
 	if ((*line)[i] == 'N' || (*line)[i] == 'E' || (*line)[i] == 'S' || (*line)[i] == 'W' || (*line)[i] == '0' || (*line)[i] == '1' || (*line)[i] == '2')
 	{
-		if ((*line)[i] != '0' && (*line)[i] != '1' && (*line)[i] != '2' && *letter == 1)
+		if ((*line)[i] == '2')
+			info->nbsprite++;
+		if ((*line)[i] != '0' && (*line)[i] != '1' && (*line)[i] != '2' && tab->letter == 1)
 			return (-2);
-		if ((*line)[i] != '0' && (*line)[i] != '1' && (*line)[i] != '2' && *letter == 0)
+		if ((*line)[i] != '0' && (*line)[i] != '1' && (*line)[i] != '2' && tab->letter == 0)
 		{
 			(*line)[i] =  ((*line)[i] == 'N' ? '3' : (*line)[i]);
 			(*line)[i] =  ((*line)[i] == 'W' ? '4' : (*line)[i]);
 			(*line)[i] =  ((*line)[i] == 'S' ? '5' : (*line)[i]);
 			(*line)[i] =  ((*line)[i] == 'E' ? '6' : (*line)[i]);
-			*letter = 1;
+			tab->letter = 1;
 		}
 	}
 	else
@@ -188,21 +190,22 @@ void		put_error(t_error *error)
 	//free(tab->error);
 }
 
-int			first_string(t_maptab *tab, t_error *error)
+int			first_string(t_maptab *tab, t_info *info)
 {
 	char *newline;
 	int i;
 	int j;
+	info->nbsprite = 0;
 	tab->ret = 1;
 	while(tab->ret == 1)
 	{
 		//init_maptab(tab);
 		tab->ret = get_next_line(tab->fd, &tab->line);
-		//// // printf("line = %s\n", tab->line);
+		//printf("line = %s\n", tab->line);
 		if (tab->line[0] == '\0')
-			error->ret = -4;
-		cleanline(tab, error, &tab->line, &newline);
-		if (error->ret < 0)
+			tab->error.ret = -4;
+		cleanline(tab, info, &tab->line, &newline);
+		if (tab->error.ret < 0)
 		{
 			if (tab->map_str1 != NULL)
 				free(tab->map_str1);
@@ -263,14 +266,14 @@ int		len_row(t_maptab *tab)
 			len1++;
 		}
 		len_max = (len1 > len2 ? len1 : len2);
-		len2 = len1;
+		len2 = len_max;
 		len1 = 0;
 		i += 1;
 	}
 	return(len_max);
 }
 
-int			second_string(t_maptab *tab, t_error *error)
+int			second_string(t_maptab *tab)
 {
 	int i;
 	int j;
@@ -336,7 +339,7 @@ int		str_to_tab(t_maptab *tab)
 	return (1);
 }
 
-int 	verify_wall(t_maptab *tab, t_error *error, int x, int y)
+int 	verify_wall(t_maptab *tab, int x, int y)
 {
 	if (tab->tab[y][x + 1] == 1)
 	{
@@ -374,27 +377,27 @@ int		lastcheck_closing(t_maptab *tab, t_error *error)
 
 	y = 1;
 	x = (tab->len_max - 1);
-	// // // printf("error = %d\n", error->ret);
+	// printf("error = %d\n", error->ret);
 	while (y < (tab->counter - 1) && x >= 0)
 	{
 		while (tab->tab[y][x] == 9 || tab->tab[y][x] == 1)
 			x--;
-		// // // printf("y = %d\n", y);
-		// // // printf("x = %d\n", x);
+		// printf("y = %d\n", y);
+		// printf("x = %d\n", x);
 		if (tab->tab[y-1][x+1] != 1)
 		{
 			x++;
-		//	// // printf("x = %d\n", x);
-			if (verify_wall(tab, error, x, y) == -1)
+		//	printf("x = %d\n", x);
+			if (verify_wall(tab, x, y) == -1)
 			{
 				error->ret = -1;			
 				return (-1);
 			}
-}																																																												
+		}																																																												
 		if (tab->tab[y+1][x+1] != 1)
 		{
 			x++;
-			if (verify_wall(tab, error, x, y) == -1)
+			if (verify_wall(tab, x, y) == -1)
 			{
 				while (x < (tab->len_max) && tab->tab[y][x] == 1)
 				{
@@ -413,7 +416,7 @@ int		lastcheck_closing(t_maptab *tab, t_error *error)
 	return (1);
 }
 
-int	parsing(t_maptab *tab, t_error *error)
+int	parsing(t_maptab *tab, t_info *info)
 {
 	int i;
 	int j;
@@ -422,15 +425,16 @@ int	parsing(t_maptab *tab, t_error *error)
 	tab->letter = 0;
 	tab->map_str1 = NULL;
 	tab->i = 0;
-	error->ret = 0;
+	tab->error.ret = 0;
 	if ((tab->fd = open("map.txt", O_RDONLY)) < 0)
 		return (-1);
-	if (first_string(tab, error) == -1 || second_string(tab, error) == -1 || str_to_tab(tab) == -1 || lastcheck_closing(tab, error) == -1)
+	if (first_string(tab, info) == -1 || second_string(tab) == -1 || str_to_tab(tab) == -1 || lastcheck_closing(tab, &tab->error) == -1)
 	{
-		put_error(error);
+		put_error(&tab->error);
 		return(-1);
 	}
-	//// // printf("map_str1 = %s\n", tab->map_str1);
+	//printf("nbsprite = %d\n", info->nbsprite);
+	// printf("map_str1 = %s\n", tab->map_str1);
 	// second_string(tab, error);
 	// // // printf("%s\n", tab->map_str2);
 	// // if (!(tab->tab = malloc(sizeof(int*) * (tab->counter))))
@@ -465,7 +469,8 @@ int	parsing(t_maptab *tab, t_error *error)
 // {
 // 	t_maptab	tab;
 // 	t_error 	error;
-// 	if (parsing(&tab, &error) == -1)
+// 	t_info		info;
+// 	if (parsing(&tab, &info) == -1)
 // 		return (-1);
 // 	// while(1)
 // 	// {

@@ -2,14 +2,16 @@
 
 void fill_info(t_info *info)
 {
+	info->tex_x = 0; //************new
+//info->count_x = 0; //**********new
 	info->blocksize = 64;
 	info->screenWidth = 1600;
 	info->screenHeight = 900;
 	info->pov = 66;
 	info->a.x = 160;
 	info->a.y = 160;
-	info->angle = 0; // link to input NESW
-	info->a.z = 32;
+	info->angle = 90; // link to input NESW
+	info->a.z = 32; // retirer ???
 	info->bad = info->pov/2;
 	info->bd = info->screenWidth / 2;
 	info->ad = toa(info->bad, info->bd);
@@ -23,6 +25,7 @@ void fill_info(t_info *info)
 	info->c.y = info->a.y + info->dir.y - info->plan.y;
 	info->next_axis[0] = (int)info->a.x + (int)info->blocksize - ((int)info->a.x % (int)info->blocksize);
 	info->next_axis[1] = (int)info->a.y + (int)info->blocksize - ((int)info->a.y % (int)info->blocksize);
+	info->side = 0; //*************new
 }
 
 void update_info(t_info *info)
@@ -59,22 +62,86 @@ void	mlx_put_in_img(t_info *info, int x, int y, int color)
 // 	return (s);
 // }
 
-void	ft_display(t_info *info, int whichray, double distance) // probablenent suppr float distance
+void	ft_display(t_info *info, int whichray, double wall_hight) // probablenent suppr float distance
 {
 	int		y;
 	float	wall_down;
+	double color;
+	double ratio;
+	double rest;
+	int *texture;
 
 	y = 0;
-	wall_down = (info->screenHeight - distance) / 2;
-	// ft_bzero(info->s.data, info->screenHeight * info->screenWidth * 4);
+	info->tex_y = 0;
+	//info->count_y = 0;
+	ratio = 64/wall_hight;
+	if (wall_hight > info->screenHeight)
+		info->tex_y = ((wall_hight - info->screenHeight) / 2) * ratio;
+	if (info->side == 1)
+	{
+		if ((rest = info->wall[0] % 64) != 0)
+			info->tex_x = rest;
+		else
+			info->tex_x = 0;
+	}
+	if (info->side == 0)
+	{
+		if ((rest = info->wall[1] % 64) != 0)
+			info->tex_x = rest;
+		else
+			info->tex_x = 0;
+	}
+	// printf("side = %d\n", info->side);
+	// printf("wall[0] = %d\n", info->wall[0]);
+	// printf("wall[1] = %d\n", info->wall[1]);
+	// printf("distance = %f\n", distance);
+	// printf("whichray = %d\n", whichray);
+	// printf("ratio = %f\n", ratio);
+	wall_down = (info->screenHeight - wall_hight) / 2;
+	// put_texture(info);
+	nesw(info);
+	if (info->nesw == 0)
+		texture = info->no.data;
+	else if (info->nesw == 1)
+		texture = info->ea.data;
+	else if (info->nesw == 2)
+		texture = info->so.data;
+	else
+		texture = info->we.data;
 	while (y < info->screenHeight)
 	{
-		while (y < wall_down) //plafond
+		while (y < info->screenHeight && y < wall_down) //plafond
 			mlx_put_in_img(info, whichray, y++, 0x87ceff);
-		while (y < (wall_down + distance)) //mur
-			mlx_put_in_img(info, whichray, y++, 0xcd853f);
+		while (y < info->screenHeight && y < (wall_down + wall_hight)) //mur
+		{
+			info->tex_y = info->tex_y + ratio;
+			if ((int)info->tex_y >= 64)
+				break;
+			// printf("tex_y + ratio = %f\n", (info->tex_y + ratio)); 
+			color = texture[(int)info->tex_x + (int)info->tex_y * 64];
+			//printf("tex_x = %d et tex_y = %d\n", (int)info->tex_x, (int)info->tex_y);
+			//info->count_y++;
+			mlx_put_in_img(info, whichray, y++, color);
+			//mlx_put_in_img(info, whichray, y++, 0xcd853f);
+		}
 		mlx_put_in_img(info, whichray, y++, 0x54ff9f);  //sol
 	}
+}
+
+void put_texture(t_info *info)
+{
+	int size;
+
+	size = 64;
+	//info->no.ptr = mlx_xpm_file_to_image(info->s.mlx, "./stone.xpm", &size, &size);
+	info->no.ptr = mlx_xpm_file_to_image(info->s.mlx, "./mossy.xpm", &size, &size);
+	info->no.data = (int *)mlx_get_data_addr(info->no.ptr, &info->no.bpp, &info->no.size, &info->no.a);
+	info->so.ptr = mlx_xpm_file_to_image(info->s.mlx, "./wood.xpm", &size, &size);
+	info->so.data = (int *)mlx_get_data_addr(info->so.ptr, &info->so.bpp, &info->so.size, &info->so.a);
+	info->we.ptr = mlx_xpm_file_to_image(info->s.mlx, "./stone.xpm", &size, &size);
+	info->we.data = (int *)mlx_get_data_addr(info->we.ptr, &info->we.bpp, &info->we.size, &info->we.a);
+	info->ea.ptr = mlx_xpm_file_to_image(info->s.mlx, "./test.xpm", &size, &size);
+	info->ea.data = (int *)mlx_get_data_addr(info->ea.ptr, &info->ea.bpp, &info->ea.size, &info->ea.a);
 }
 
 int	main()
@@ -82,18 +149,18 @@ int	main()
 	t_info info;
 	t_maptab tab;
 	t_error error;
+	t_sprites barrel;
 
-	parsing(&tab, &error);
+	parsing(&tab, &info);
 	info.worldMap = tab.tab;
 	fill_info(&info);
 	info.s.mlx = mlx_init();
 // 	all->fractal.img = mlx_new_image(all->wdw.mlx_ptr, W_SIZE_X, W_SIZE_Y);
 // all->fractal.data = (int *)mlx_get_data_addr(all->fractal.img, &all->fractal.bpp, &all->fractal.size, &all->fractal.a);
-
    	info.s.win = mlx_new_window(info.s.mlx, info.screenWidth, info.screenHeight, "Cube3D");
 	info.s.img = mlx_new_image(info.s.mlx, info.screenWidth, info.screenHeight);
 	info.s.data = (int *)mlx_get_data_addr(info.s.img, &info.s.bpp, &info.s.size, &info.s.a);
-	rendering(&info);
+	rendering(&info, &barrel);
 	// mlx_put_image_to_window(s.mlx, s.win, s.img, info.screenWidth, info.screenHeight);
 	mlx_key_hook(info.s.win, ft_key_press, &info);
 	// mlx_key_hook(s.win, ft_angle, &info);
@@ -104,32 +171,41 @@ int	main()
   mlx_loop(info.s.mlx);
 }
 
-void rendering (t_info *info)
+void rendering(t_info *info, t_sprites *barrel)
 {
 	int whichray;
 	double shortest_distance;
-	double slice_hight;
-
+	double wall_hight;
+	double distance_tab[info->screenWidth];
+	//static int wall[2];
+	
+	info->wall[0] = -1;
+	info->wall[1] = -1;
 
 	whichray = 0;
 	// mlx_clear_window(info->s.mlx, info->s.win); don t clear with image
+	put_texture(info);
 	while(whichray < info->screenWidth)
 	{
 		// printf("------------------ray = %d\n", whichray);
 		update_info(info);
-		p_on_plan(info, (double)whichray);
+		p_on_plan(info, (double)whichray);  
 		ray(&info->ray, info->a, info->p_of_plan);
 		test_x_axis(info);
 		test_y_axis(info);
 		shortest_distance = distance_to_wall(info);
-		slice_hight = walls(info, shortest_distance, whichray);
+		//printf("whichray = %d\n", whichray);
+		distance_tab[whichray] = shortest_distance;
+		//printf("shortest_distance = %f et distance_tab[whichray] = %f\n", shortest_distance, distance_tab[whichray]);
+		wall_hight = walls(info, shortest_distance, whichray);
 		// // printf("distance %f\n", shortest_distance);
-		// printf("slice_hight %f\n", slice_hight);
-		ft_display(info, whichray, slice_hight);
+		// printf("slice_hight %f\n", slice_hight);dds
+		ft_display(info, whichray, wall_hight);
 		whichray++;
 		// // // // printf("a.x = %f\n", info->a.x);
 		// // // // printf("a.y = %f\n", info->a.y);
 	}
+	handlesprites(barrel, info);
 	mlx_put_image_to_window(info->s.mlx, info->s.win, info->s.img, 0, 0);
 	// printf("a.x = %f\n", info->a.x);
 	// printf("a.y = %f\n", info->a.y);
@@ -138,7 +214,7 @@ void rendering (t_info *info)
 
 void p_on_plan(t_info *info, double whichray)
 {
-	info->p_of_plan.x = info->b.x - (whichray * (info->b.x - info->c.x) / info->screenWidth);
+	info->p_of_plan.x = info->b.x - (whichray * (info->b.x - info->c.x) / info->screenWidth); 
 	info->p_of_plan.y = info->b.y - (whichray * (info->b.y - info->c.y) / info->screenWidth);
 }
 
@@ -213,22 +289,37 @@ int map_bounderies(t_info *info, int n)
 	return (0);
 }
 
+// void	width_wall(t_info *info, int whichray, int *old_wall)
+// {
+// 	static int wall[2];
+
+// 	wall[0] = old_wall[0];
+// 	wall[1] = old_wall[1];
+// }
+
 double distance_to_wall(t_info *info)
 {
 	double distance[2];
+//	static int wall[2];
 
 	if (info->redflag[0] == 1)
 	{
+		info->side = 1;
 		// // // // printf("--------------1--------------\n");
 		// printf("distance[0] %f\n", distance[0]);
 		// printf("distance[1] %f\n", distance_2_points(info->a, info->test_axis[1]));
+		info->wall[0] = info->test_axis[1].x;
+		info->wall[1] = info->test_axis[1].y;
 		return (distance_2_points(info->a, info->test_axis[1]));
 	}
 	if (info->redflag[1] == 1)
 	{
+		info->side = 0;
 		// // // // printf("--------------2--------------\n");
 		// printf("distance[0] %f\n", distance[0]);
 		// printf("distance[1] %f\n", distance[1]);
+		info->wall[0] = info->test_axis[0].x;
+		info->wall[1] = info->test_axis[0].y;
 		return (distance_2_points(info->a, info->test_axis[0]));
 	}
 	// // // printf("info->a = %f\n", info->a.x);
@@ -241,9 +332,21 @@ double distance_to_wall(t_info *info)
 	// printf("distance[1] %f\n", distance[1]);
 	// // // printf("--------------distance to be used---------------\n");
 	if (distance[0] < distance[1])
+	{
+		info->side = 0;
+		info->wall[0] = info->test_axis[0].x;
+		info->wall[1] = info->test_axis[0].y;
+		info->wallx = info->test_axis[0].x;
 		return (distance[0]);
+	}
 	else 
-		return (distance[1]); 
+	{
+		info->side = 1;
+		info->wall[0] = info->test_axis[1].x;
+		info->wall[1] = info->test_axis[1].y;
+		info->wallx = info->test_axis[1].x;
+		return (distance[1]);
+	}
 }
 
 int hit_map(t_info *info, int n)
@@ -266,6 +369,15 @@ int hit_map(t_info *info, int n)
 		return (1);
 	}
 	return(0);
+}
+
+void nesw(t_info *info)
+{
+	if (info->side == 0) 
+		info->nesw = (info->a.x < info->p_of_plan.x) ? 1 : 3;
+	if (info->side == 1) 
+		info->nesw = (info->a.y < info->p_of_plan.y) ? 0 : 2;
+	return;
 }
 
 void print(t_info *info)
